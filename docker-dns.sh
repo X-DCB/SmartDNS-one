@@ -5,6 +5,7 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(
 apt update
 apt install docker-ce -y
 [ -d /etc/_configs ] || mkdir /etc/_configs
+docker service ls || docker swarm init --advertise-addr $(wget -qO- ipv4.icanhazip.com)
 echo 'bind-dynamic
 bogus-priv
 domain-needed
