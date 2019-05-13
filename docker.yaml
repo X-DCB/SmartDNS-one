@@ -1,0 +1,32 @@
+version: "3.7"
+services: 
+ dnsmasq-service: 
+  image: andyshinn/dnsmasq:latest
+  container_name: dnsx
+  privileged: true
+  network_mode: host
+  hostname: dnsx
+  tty: true
+  cap_add: 
+   - NET_ADMIN
+  volumes: 
+   - /etc/_configs/dnsmasq.conf:/etc/dnsmasq.conf
+   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/dns-sni.conf
+  ports: 
+   - "53:53"
+   - "53:53/udp"
+  restart: always
+
+ sniproxy-serv: 
+  image: ab77/sniproxy:latest
+  container_name: sniproxy
+  privileged: true
+  network_mode: host
+  cap_add: 
+   - NET_ADMIN
+  ports: 
+   - "80:80"
+   - "443:443"
+  volumes: 
+   - /etc/_configs/sniproxy.conf:/etc/sniproxy.conf
+  restart: always
