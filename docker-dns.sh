@@ -5,7 +5,10 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(
 apt update
 apt install docker-ce -y
 [ -d /etc/_configs ] || mkdir /etc/_configs
-docker service ls || docker swarm init --advertise-addr $(wget -qO- ipv4.icanhazip.com)
+IP=$(wget -qO- ipv4.icanhazip.com)
+docker service ls || docker swarm init --advertise-addr $IP
+while [[ ! $sqx =~ Y|y|N|n ]]; do
+	read -p "Shareable RP: [Y/y] [N/n] " sqx;done
 echo 'bind-dynamic
 bogus-priv
 domain-needed
@@ -86,9 +89,10 @@ address=/www.bbc.co.uk/IPADD
 address=/crunchyroll.com/IPADD
 address=/ifconfig.co/IPADD
 address=/omtrdc.net/IPADD' | \
-sed -e "s/IPADD/$(wget -qO- ipv4.icanhazip.com)/g" > \
+sed -e "s/IPADD/$IP/g" > \
 /etc/_configs/sni-dns.conf
 wget \
 https://raw.githubusercontent.com/X-DCB/netflix-proxy/master/docker-sniproxy/sniproxy.conf.template \
 -qO /etc/_configs/sniproxy.conf
+wget https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master/squid.conf -qO- | sed -e "s/XIP/$IP/g" | ([[ $sqx =~ Y|y ]] && sed -e "s/#http/http/g" || cat) > /etc/_configs/squid.conf
 wget https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master/docker.yaml -qO- | docker stack deploy -c - dnsx
