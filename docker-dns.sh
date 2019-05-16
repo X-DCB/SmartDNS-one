@@ -95,5 +95,5 @@ sed -e "s/IPADD/$IP/g" > \
 wget \
 https://raw.githubusercontent.com/X-DCB/netflix-proxy/master/docker-sniproxy/sniproxy.conf.template \
 -qO /etc/_configs/sniproxy.conf
-wget https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master/squid.conf -qO- | sed -e "s/XIP/$IP/g" | ([[ $sqx =~ Y|y ]] && sed -e "s/#http/http/g" || cat) > /etc/_configs/squid.conf
+wget https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master/squid.conf -qO- | sed -e "s/XIP/$IP/g" | ([[ $sqx =~ N|n ]] && sed -e "s/#http/http/g" || cat) > /etc/_configs/squid.conf
 wget https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master/docker.yaml -qO- | docker stack deploy -c - dnsx
