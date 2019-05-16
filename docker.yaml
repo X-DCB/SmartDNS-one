@@ -12,7 +12,7 @@ services:
    - "8888:8888"
    - "3128:3128"
   volumes: 
-   - /etc/_configs/squid.conf:/etc/squid/
+   - /etc/_configs/squid.conf:/etc/squid/squid.conf
   entrypoint: ./squidx
   
  dnsmasq-service: 
@@ -25,8 +25,8 @@ services:
   cap_add: 
    - NET_ADMIN
   volumes: 
-   - /etc/_configs/dnsmasq.conf:/etc/
-   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/
+   - /etc/_configs/dnsmasq.conf:/etc/dnsmasq.conf
+   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/dns-sni.conf
   ports: 
    - "53:53"
    - "53:53/udp"
