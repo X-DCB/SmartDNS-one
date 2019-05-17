@@ -9,19 +9,16 @@ services:
    - NET_ADMIN
   ports: 
    - "8080:8080"
-   - "8888:8888"
+   - "8000:8000"
    - "3128:3128"
   volumes: 
    - /etc/_configs/squid.conf:/etc/squid/squid.conf
-  entrypoint: ./squidx
   
  dnsmasq-service: 
-  image: andyshinn/dnsmasq:latest
+  image: user0x01/smart-bypass:dnsX
   container_name: dnsx
   privileged: true
   network_mode: host
-  hostname: dnsx
-  tty: true
   cap_add: 
    - NET_ADMIN
   volumes: 
@@ -30,7 +27,6 @@ services:
   ports: 
    - "53:53"
    - "53:53/udp"
-  restart: always
 
  sniproxy-serv: 
   image: ab77/sniproxy:latest
