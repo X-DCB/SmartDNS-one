@@ -14,7 +14,7 @@ DNUL="/dev/null"
 CONFDIR="/etc/_configs"
 GITMINE="https://raw.githubusercontent.com/X-DCB/SmartDNS-one/master"
 docker service ls 2> $DNUL || docker swarm init --advertise-addr $IP
-docker service rm dnsx 2> $DNUL
+docker stack rm dnsx 2> $DNUL
 wget \
 https://raw.githubusercontent.com/X-DCB/netflix-proxy/master/docker-sniproxy/sniproxy.conf.template \
 -qO $CONFDIR/sniproxy.conf
