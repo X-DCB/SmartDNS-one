@@ -1,7 +1,7 @@
 version: "3.7"
 services: 
  squidx-serv: 
-  image: user0x01/smart-bypass:squidX
+  image: xdcb/smart-bypass:squidX
   container_name: squidX
   privileged: true
   network_mode: host
@@ -15,7 +15,7 @@ services:
    - /etc/_configs/squid.conf:/etc/squid/squid.conf
   
  dnsmasq-service: 
-  image: user0x01/smart-bypass:dnsX
+  image: xdcb/smart-bypass:dnsX
   container_name: dnsx
   privileged: true
   network_mode: host
