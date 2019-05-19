@@ -12,7 +12,7 @@ services:
    - "8000:8000"
    - "3128:3128"
   volumes: 
-   - /etc/_configs/squid.conf:/etc/squid/squid.conf
+   - /etc/_configs/squid.conf:/etc/squid/squid.conf:consistent
   
  dnsmasq-service: 
   image: xdcb/smart-bypass:dnsX
@@ -23,7 +23,7 @@ services:
    - NET_ADMIN
   volumes: 
    - /etc/_configs/dnsmasq.conf:/etc/dnsmasq.conf
-   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/dns-sni.conf
+   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/dns-sni.conf:consistent
   ports: 
    - "53:53"
    - "53:53/udp"
