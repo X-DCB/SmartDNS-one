@@ -25,5 +25,10 @@ printf "\b${str}${spin:$i:1} \r"
 sleep .1
 done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
-cat docker.yaml | docker stack up -c - dnsx
+mkdir $CONFDIR 2> $DNUL
+wget https://raw.githubusercontent.com/X-DCB/netflix-proxy/master/docker-sniproxy/sniproxy.conf.template -qO $CONFDIR/sniproxy.conf
+wget $GITMINE/dnsmasq.conf -qO $CONFDIR/
+wget $GITMINE/squid.conf -qO $CONFDIR/
+wget $GITMINE/sni-dns.conf -qO $CONFDIR/
+wget $GITMINE/docker.yaml -qO- | docker stack up -c - dnsx
 docker service update $(docker service ls | grep squid | cut -d ' ' -f 1) --args $sqx
