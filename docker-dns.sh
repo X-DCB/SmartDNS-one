@@ -27,8 +27,9 @@ done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
 mkdir $CONFDIR 2> $DNUL
 wget https://raw.githubusercontent.com/X-DCB/netflix-proxy/master/docker-sniproxy/sniproxy.conf.template -qO $CONFDIR/sniproxy.conf
-wget $GITMINE/dnsmasq.conf -qO $CONFDIR/
-wget $GITMINE/squid.conf -qO $CONFDIR/
-wget $GITMINE/sni-dns.conf -qO $CONFDIR/
+wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
+wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
+wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
+service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | docker stack up -c - dnsx
 docker service update $(docker service ls | grep squid | cut -d ' ' -f 1) --args $sqx
