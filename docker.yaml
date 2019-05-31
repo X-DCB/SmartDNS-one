@@ -23,7 +23,7 @@ services:
    - NET_ADMIN
   volumes: 
    - /etc/_configs/dnsmasq.conf:/etc/dnsmasq.conf
-   - /etc/_configs/dns-sni.conf:/etc/dnsmasq.d/dns-sni.conf:consistent
+   - /etc/_configs/sni-dns.conf:/etc/dnsmasq.d/sni-dns.conf:consistent
   ports: 
    - "53:53"
    - "53:53/udp"
