@@ -40,4 +40,5 @@ services:
    - "443:443"
   volumes: 
    - /etc/_configs/sniproxy.conf:/etc/sniproxy.conf
+   - /var/run/nginx-http.socket:/nginx-http.socket
   restart: always
