@@ -3,6 +3,7 @@ services:
  squidx-serv: 
   image: xdcb/smart-bypass:squidX
   container_name: squidX
+  command: "$sqx"
   privileged: true
   network_mode: host
   cap_add: 
