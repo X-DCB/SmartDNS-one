@@ -1,6 +1,7 @@
 #!/bin/bash
 while [[ ! $sqx =~ Y|y|N|n ]]; do
 	read -p "Shareable RP: [Y/y] [N/n] " sqx;done
+export sqx=$sqx
 if [[ ! `which docker` ]]; then
 apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
 curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
@@ -8,6 +9,8 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(
 apt update
 apt-cache policy docker-ce
 apt install docker-ce -y; fi
+[ `which dcomp` ] || wget "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -qO /sbin/dcomp
+chmod +x /sbin/dcomp || return
 IP=$(wget -qO- ipv4.icanhazip.com)
 DNUL="/dev/null"
 CONFDIR="/etc/_configs"
@@ -31,5 +34,5 @@ wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
 wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
 wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
 service squid stop 2> $DNUL
-wget $GITMINE/docker.yaml -qO- | docker stack up -c - dnsx
-docker service update $(docker service ls | grep squid | cut -d ' ' -f 1) --args $sqx
+wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
+wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d
