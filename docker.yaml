@@ -16,7 +16,7 @@ services:
   
  dnsmasq-service: 
   image: xdcb/smart-bypass:dnsX
-  container_name: dnsx
+  container_name: dnsX
   privileged: true
   network_mode: host
   cap_add: 
