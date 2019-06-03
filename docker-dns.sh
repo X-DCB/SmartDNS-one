@@ -36,7 +36,7 @@ sleep .1
 done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
 mkdir $CONFDIR 2> $DNUL
-wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf
+wget $GITMINE/sniproxy.conf -qO- | echo "$([[ `cat /etc/network/interfaces` =~ 'inet6 static' ]] && sed -e 's/ipv4_only/ipv6_first/g')" > $CONFDIR/sniproxy.conf 
 wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
 wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
 wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
