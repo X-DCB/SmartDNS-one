@@ -56,4 +56,4 @@ iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited' > /sbin/nfiptab
 chmod -x /sbin/nfiptab && nfiptab
-echo -ne "\nInstall finished."
+echo -ne "\nInstall finished.\n"
