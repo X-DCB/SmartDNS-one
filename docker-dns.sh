@@ -45,6 +45,7 @@ service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d
 # iptables
+echo -e '#!/bin/bash
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
@@ -53,5 +54,6 @@ iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
-iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited
+iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited' > /sbin/nfiptab
+chmod -x /sbin/nfiptab && nfiptab
 echo -ne "\nInstall finished."
