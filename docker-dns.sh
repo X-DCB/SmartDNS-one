@@ -15,7 +15,8 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 apt update
 apt-cache policy docker-ce
-apt install docker-ce -y; fi; fi
+apt install docker-ce -y
+apt clean; fi; fi
 [ `type -P dcomp` ] || wget "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -qO /sbin/dcomp
 chmod +x /sbin/dcomp || return
 IP=$(wget -qO- ipv4.icanhazip.com)
@@ -36,10 +37,21 @@ sleep .1
 done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
 mkdir $CONFDIR 2> $DNUL
-wget $GITMINE/sniproxy.conf -qO- | echo "$([[ `cat /etc/network/interfaces` =~ 'inet6 static' ]] && sed -e 's/ipv4_only/ipv6_first/g')" > $CONFDIR/sniproxy.conf 
+wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf 
 wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
 wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
 wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
 service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d
+# iptables
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A INPUT -p icmp -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited
+echo -ne "\nInstall finished."
