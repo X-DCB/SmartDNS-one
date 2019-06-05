@@ -13,7 +13,7 @@ services:
    - "8000:8000"
    - "3128:3128"
   volumes: 
-   - /etc/_configs/squid.conf:/etc/squid/squid.conf
+   - /etc/_configs/squid.conf:/squid.conf
   restart: always
   
  dnsmasq-service: 
