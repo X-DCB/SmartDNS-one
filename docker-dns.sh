@@ -41,14 +41,31 @@ wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf
 wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
 wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
 wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
+wget $GITMINE/daemon.json -qO /etc/docker/daemon.json
 service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d
 # iptables
+echo "[Unit]
+Description=OpenVPN IP Table
+Wants=network.target
+After=network.target
+DefaultDependencies=no
+[Service]
+ExecStart=/sbin/nfiptab
+Type=oneshot
+RemainAfterExit=yes
+[Install]
+WantedBy=network.target" > /etc/systemd/system/nfiptab.service
 echo -e '#!/bin/bash
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -A INPUT -j ACCEPT
+iptables -A FORWARD -j ACCEPT
 iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
@@ -56,4 +73,6 @@ iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited' > /sbin/nfiptab
 chmod +x /sbin/nfiptab && nfiptab
-echo -ne "\nInstall finished.\n"
+systemctl daemon-reload
+systemctl enable nfiptab && systemctl restart nfiptab docker
+echo -ne "\nInstall finished.\nPlease reboot your vps.\n"
