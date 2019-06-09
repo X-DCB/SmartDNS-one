@@ -1,22 +1,24 @@
 #!/bin/bash
-. /etc/os-release
 while [[ ! $sqx =~ Y|y|N|n ]]; do
-	read -p "Shareable RP: [Y/y] [N/n] " sqx;done
+	read -p "Shareable RP? [Y/y] [N/n] " sqx;done
 export sqx=$sqx
+read -p "Location: [SG] " vloc
+vloc=${vloc:-SG}
+[ $vloc = SG] && vlocx=squidx-serv
 if [[ ! `type -P docker` ]]; then
-if [ $ID = centos ]; then
-yum install -y yum-utils device-mapper-persistent-data lvm2 wget curl
-curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --with-fingerprint --import
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum install docker-ce -y
-else
+if [[ `uname -v` =~ Debian ]]; then
 apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
 curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 apt update
 apt-cache policy docker-ce
 apt install docker-ce -y
-apt clean; fi; fi
+apt clean
+else
+yum install -y yum-utils device-mapper-persistent-data lvm2 wget curl
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --with-fingerprint --import
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce -y; fi; fi
 [ `type -P dcomp` ] || wget "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -qO /sbin/dcomp
 chmod +x /sbin/dcomp || return
 IP=$(wget -qO- ipv4.icanhazip.com)
@@ -44,7 +46,7 @@ wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
 wget $GITMINE/daemon.json -qO /etc/docker/daemon.json
 service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
-wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d
+wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d $vlocx
 # iptables
 echo "[Unit]
 Description=OpenVPN IP Table
