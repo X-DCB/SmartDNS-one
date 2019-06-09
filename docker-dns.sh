@@ -4,7 +4,7 @@ while [[ ! $sqx =~ Y|y|N|n ]]; do
 export sqx=$sqx
 read -p "Location: [SG] " vloc
 vloc=${vloc:-SG}
-[ $vloc = SG] && vlocx=squidx-serv
+[ $vloc = SG ] && vlocx=squidx-serv
 if [[ ! `type -P docker` ]]; then
 if [[ `uname -v` =~ Debian ]]; then
 apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
