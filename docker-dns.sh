@@ -48,7 +48,7 @@ sleep .1
 done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
 mkdir $CONFDIR 2> $DNUL
-if [ $vloc = SG ]; then
+if [ $vloc != SG ]; then
 # iptables
 echo "[Unit]
 Description=OpenVPN IP Table
@@ -85,7 +85,8 @@ wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf
 wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
 wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf; fi
 
-wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
+wget $GITMINE/squid.conf -qO- | sed -e "s/XIP/$(wget -qO- ipv4.icanhazip.com)/g" > $CONFDIR/squid.conf
+
 service squid stop 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
 wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d $vlocx
