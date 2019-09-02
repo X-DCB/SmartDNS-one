@@ -1,9 +1,18 @@
 #!/bin/bash
+if [ "$(id -u)" -ne 0 ]; then
+	echo -ne "\nPlease execute this script as root.\n"
+	exit 1; fi
+if [ ! -f /etc/debian* ]; then
+	echo -ne "\nFor Debian distro only.\n"
+	exit 1; fi
+export DEBIAN_FRONTEND=noninteractive
+
 while [[ ! $sqx =~ Y|y|N|n ]]; do
 	read -p "Shareable RP? [Y/y] [N/n] " sqx;done
 export sqx=$sqx
 read -p "Location: [SG] " vloc
 vloc=${vloc:-SG}
+pkgs=docker
 [ $vloc = SG ] && vlocx=squidx-serv
 if [[ ! `type -P docker` ]]; then
 if [ -f /etc/debian* ]; then
@@ -39,14 +48,7 @@ sleep .1
 done
 printf "\b\b$fin%$(( ${#str}-${#fin}+1 ))s\n"
 mkdir $CONFDIR 2> $DNUL
-wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf 
-wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
-wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
-wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf
-wget $GITMINE/daemon.json -qO /etc/docker/daemon.json
-service squid stop 2> $DNUL
-wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
-wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d $vlocx
+if [ $vloc = SG ]; then
 # iptables
 echo "[Unit]
 Description=OpenVPN IP Table
@@ -75,6 +77,18 @@ iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited' > /sbin/nfiptab
 chmod +x /sbin/nfiptab && nfiptab
+pkgs+=' nfiptab'
 systemctl daemon-reload
-systemctl enable nfiptab && systemctl restart nfiptab docker
+systemctl enable nfiptab
+
+wget $GITMINE/sniproxy.conf -qO $CONFDIR/sniproxy.conf 
+wget $GITMINE/dnsmasq.conf -qO $CONFDIR/dnsmasq.conf
+wget $GITMINE/sni-dns.conf -qO $CONFDIR/sni-dns.conf; fi
+
+wget $GITMINE/squid.conf -qO $CONFDIR/squid.conf
+service squid stop 2> $DNUL
+wget $GITMINE/docker.yaml -qO- | dcomp -f - down 2> $DNUL
+wget $GITMINE/docker.yaml -qO- | dcomp -f - up -d $vlocx
+wget $GITMINE/daemon.json -qO /etc/docker/daemon.json
+systemctl restart $pkgs
 echo -ne "\nInstall finished.\nPlease reboot your vps.\n"
