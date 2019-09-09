@@ -2,10 +2,6 @@
 if [ "$(id -u)" -ne 0 ]; then
 	echo -ne "\nPlease execute this script as root.\n"
 	exit 1; fi
-if [ ! -f /etc/debian* ]; then
-	echo -ne "\nFor Debian distro only.\n"
-	exit 1; fi
-export DEBIAN_FRONTEND=noninteractive
 
 while [[ ! $sqx =~ Y|y|N|n ]]; do
 	read -p "Shareable RP? [Y/y] [N/n] " sqx;done
@@ -16,6 +12,7 @@ pkgs=docker
 [ $vloc = SG ] && vlocx=squidx-serv
 if [[ ! `type -P docker` ]]; then
 if [ -f /etc/debian* ]; then
+export DEBIAN_FRONTEND=noninteractive
 apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
 curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
